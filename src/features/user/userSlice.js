@@ -23,6 +23,8 @@ export const fetchAddress = createAsyncThunk(
   },
 );
 const initialState = {
+  loginMethod: '',
+  loginUid: '',
   username: '',
   status: 'idle',
   position: {},
@@ -36,6 +38,19 @@ const userSlice = createSlice({
   reducers: {
     updateName(state, action) {
       state.username = action.payload;
+    },
+    handleLogin(state, action) {
+      state.loginMethod = action.payload.method;
+      state.loginUid = action.payload.uid;
+    },
+    handleLogout(state) {
+      state.loginMethod = '';
+      state.loginUid = '';
+      state.username = '';
+      state.status = 'idle';
+      state.position = {};
+      state.address = '';
+      state.error = '';
     },
   },
   extraReducers: (builder) =>
@@ -54,5 +69,5 @@ const userSlice = createSlice({
       }),
 });
 
-export const { updateName } = userSlice.actions;
+export const { updateName, handleLogin, handleLogout } = userSlice.actions;
 export default userSlice.reducer;

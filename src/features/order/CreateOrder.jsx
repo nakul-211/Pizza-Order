@@ -27,6 +27,7 @@ function CreateOrder() {
   } = useSelector((state) => state.user);
   const isLoadingAddress = addressStatus === 'loading';
   const cart = useSelector(getCart);
+  const loginUid = useSelector((state) => state.user.loginUid);
   const [withPriority, setWithPriority] = useState(false);
   const dispatch = useDispatch();
   const totalCartPrice = useSelector(getTotalCartPrice);
@@ -116,6 +117,7 @@ function CreateOrder() {
 
         <div>
           <input type="hidden" name="cart" value={JSON.stringify(cart)} />
+          <input type="hidden" name="loginUid" value={loginUid} />
           <input
             type="hidden"
             name="position"
@@ -141,6 +143,7 @@ export async function action({ request }) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   const orderCart = JSON.parse(data.cart);
+  const loginUid = data.loginUid;
   const orderPrice = orderCart.reduce((acc, item) => {
     return acc + item.totalPrice;
   }, 0);
@@ -160,6 +163,7 @@ export async function action({ request }) {
         ? Math.ceil((priorityPrice / 100) * orderPrice)
         : 0,
     estimatedDelivery: estimatedTime,
+    loginUid,
   };
 
   const errors = {};
