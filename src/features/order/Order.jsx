@@ -10,6 +10,7 @@ import {
 import OrderItem from './OrderItem';
 import { useEffect } from 'react';
 import UpdateOrder from './UpdateOrder';
+import { auth } from '../../services/firebaseConfig';
 function Order() {
   const order = useLoaderData();
   const fetcher = useFetcher();
@@ -91,6 +92,7 @@ function Order() {
 }
 
 export async function loader({ params }) {
+  console.log(auth);
   const order = await getOrder(params.orderId);
   return order;
 }

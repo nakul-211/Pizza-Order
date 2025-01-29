@@ -10,7 +10,7 @@ function Header() {
   const method = useSelector((state) => state.user.loginMethod);
   const navigate = useNavigate();
   const onLogoutButton = async function () {
-    console.log('Logout');
+    // console.log('Logout');
     await signOut(auth);
     dispatch(handleLogout());
     navigate('/');
