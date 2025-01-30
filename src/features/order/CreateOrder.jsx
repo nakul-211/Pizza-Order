@@ -144,15 +144,22 @@ export async function action({ request }) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   const orderCart = JSON.parse(data.cart);
+  const loginUid = auth?.currentUser?.uid || 'local';
+  const orderStoredValue =
+    JSON.parse(localStorage.getItem('localOrders')) || [];
   const orderPrice = orderCart.reduce((acc, item) => {
     return acc + item.totalPrice;
   }, 0);
   const orderQuantity = orderCart.reduce((acc, item) => {
     return acc + item.quantity;
   }, 0);
-  const currentDate = new Date();
-  currentDate.setMinutes(currentDate.getMinutes() + 15 * orderQuantity);
-  const estimatedTime = currentDate.toISOString();
+  let estimatedTime = new Date();
+  estimatedTime.setMinutes(estimatedTime.getMinutes() + 15 * orderQuantity);
+
+  estimatedTime = estimatedTime.toISOString();
+
+  let currentDate = new Date();
+  currentDate = currentDate.toISOString();
   const order = {
     ...data,
     cart: orderCart,
@@ -162,8 +169,10 @@ export async function action({ request }) {
       data.priority === 'true'
         ? Math.ceil((priorityPrice / 100) * orderPrice)
         : 0,
+    orderDate: currentDate,
     estimatedDelivery: estimatedTime,
-    loginUid: auth?.currentUser?.uid || 'local',
+    delivered: false,
+    loginUid,
   };
 
   const errors = {};
@@ -173,7 +182,12 @@ export async function action({ request }) {
 
   if (Object.keys(errors).length > 0) return errors;
   const newOrder = await createOrder(order);
-
+  console.log(newOrder);
+  loginUid !== 'local' ||
+    localStorage.setItem(
+      'localOrders',
+      JSON.stringify([...orderStoredValue, newOrder.id]),
+    );
   store.dispatch(clearCart());
   return redirect(`/order/${newOrder.id}`);
 }

@@ -30,6 +30,7 @@ const initialState = {
   position: {},
   address: '',
   error: '',
+  //  prevOrders: [],
 };
 
 const userSlice = createSlice({
@@ -42,10 +43,11 @@ const userSlice = createSlice({
     handleLogin(state, action) {
       state.loginMethod = action.payload.method;
       state.loginUid = action.payload.uid;
+      //      state.prevOrders = action.payload.orders;
     },
     handleLogout(state) {
       state.loginMethod = '';
-      state.loginUid = '';
+      state.loginUid = 'local';
       state.username = '';
       state.status = 'idle';
       state.position = {};

@@ -15,13 +15,21 @@ function Header() {
     dispatch(handleLogout());
     navigate('/');
   };
-  onAuthStateChanged(auth, (user) => {
+  const onPastOrdersButton = function () {
+    navigate('/pastorders');
+  };
+
+  onAuthStateChanged(auth, async (user) => {
+    const loginUid = user?.reloadUserInfo.localId || 'local';
+    //   const allOrders = await getAllOrders(loginUid, items);
     dispatch(
       handleLogin({
         method: user?.providerData[0].providerId || '',
-        uid: user?.providerData[0].uid || '',
+        uid: loginUid,
+        // orders: allOrders || items,
       }),
     );
+    // console.log(allOrders);
   });
   return (
     <header className="px flex items-center justify-between border-b border-stone-200 bg-yellow-500 px-4 py-3 uppercase sm:px-6">
@@ -29,20 +37,24 @@ function Header() {
         Fast React Pizza Company
       </Link>
       <div className="flex flex-row items-center justify-center gap-4">
-        {/* <SearchOrder /> */}
-
+        {' '}
+        <Username />
+        <button
+          onClick={onPastOrdersButton}
+          className="inline-block rounded-full bg-green-600 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-stone-50 transition-colors duration-300 hover:bg-green-700 focus:bg-green-700 focus:outline-none focus:ring focus:ring-green-700 focus:ring-offset-2 disabled:cursor-not-allowed"
+        >
+          Past Orders
+        </button>
         {method === '' ? (
           ''
         ) : (
           <button
-            className="inline-block rounded-full bg-red-600 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-stone-50 transition-colors duration-300 hover:bg-red-700 focus:bg-red-300 focus:outline-none focus:ring focus:ring-red-300 focus:ring-offset-2 disabled:cursor-not-allowed"
+            className="inline-block rounded-full bg-red-600 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-stone-50 transition-colors duration-300 hover:bg-red-700 focus:bg-red-700 focus:outline-none focus:ring focus:ring-red-700 focus:ring-offset-2 disabled:cursor-not-allowed"
             onClick={onLogoutButton}
           >
             Logout
           </button>
         )}
-
-        <Username />
       </div>
     </header>
   );

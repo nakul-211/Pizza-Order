@@ -30,6 +30,7 @@ function Order() {
     orderPrice,
     estimatedDelivery,
     cart,
+    delivered,
   } = order;
   const deliveryIn = calcMinutesLeft(estimatedDelivery);
 
@@ -51,14 +52,20 @@ function Order() {
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2 bg-stone-200 px-6 py-5">
-        <p className="font-medium">
-          {deliveryIn >= 0
-            ? `Only ${calcMinutesLeft(estimatedDelivery)} minutes left 😃`
-            : 'Order should have arrived'}
-        </p>
-        <p className="text-xs text-stone-500">
-          (Estimated delivery: {formatDate(estimatedDelivery)})
-        </p>
+        {delivered ? (
+          <p className="font-medium">delivered</p>
+        ) : (
+          <>
+            <p className="font-medium">
+              {deliveryIn >= 0
+                ? `Only ${calcMinutesLeft(estimatedDelivery)} minutes left 😃`
+                : 'Order should have arrived'}
+            </p>
+            <p className="text-xs text-stone-500">
+              (Estimated delivery: {formatDate(estimatedDelivery)})
+            </p>
+          </>
+        )}
       </div>
       <ul className="divide-y divide-stone-200 border-b border-t">
         {cart.map((item) => (
@@ -92,7 +99,7 @@ function Order() {
 }
 
 export async function loader({ params }) {
-  console.log(auth);
+  // console.log(auth);
   const order = await getOrder(params.orderId);
   return order;
 }

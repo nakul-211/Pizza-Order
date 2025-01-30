@@ -3,9 +3,7 @@ import {
   collection,
   doc,
   getDocs,
-  query,
   updateDoc,
-  where,
 } from 'firebase/firestore';
 import { auth, db } from './firebaseConfig';
 import { priorityPrice } from '../features/order/CreateOrder';
@@ -28,7 +26,6 @@ export async function getMenu() {
 }
 
 export async function getOrder(id) {
-  const loginUid = auth?.currentUser?.uid || 'local';
   const orderData = await getDocs(orderCollectionRef);
   const filteredData = orderData.docs
     .map((doc) => ({
@@ -39,10 +36,25 @@ export async function getOrder(id) {
       (item) => item.id === id,
       // && item.loginUid === (auth?.currentUser?.uid || 'local'),
     );
-  console.log(filteredData);
+  // console.log(filteredData);
   return filteredData;
 }
+export async function getAllOrders(id, items) {
+  const orderData = await getDocs(orderCollectionRef);
+  const filteredData = orderData.docs
+    .map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    }))
+    .filter(
+      (item) => {
+        return items.includes(item.id) || item.loginUid === id;
+      },
 
+      // && item.loginUid === (auth?.currentUser?.uid || 'local'),
+    );
+  return filteredData;
+}
 export async function createOrder(newOrder) {
   try {
     const data = await addDoc(orderCollectionRef, newOrder);
@@ -54,14 +66,15 @@ export async function createOrder(newOrder) {
 
 export async function updateOrder(id) {
   try {
+    const loginUid = auth?.currentUser?.uid || 'local';
     const orderData = await getDocs(orderCollectionRef);
     const filteredData = orderData.docs
       .map((doc) => ({
         ...doc.data(),
         id: doc.id,
-        loginUid: auth?.currentUser?.uid || 'local',
+        // loginUid: auth?.currentUser?.uid || 'local',
       }))
-      .find((item) => item.id === id);
+      .find((item) => item.id === id && item.loginUid === loginUid);
     const orderDoc = doc(db, 'Pizza-Order', id);
 
     await updateDoc(orderDoc, {
