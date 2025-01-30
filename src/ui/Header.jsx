@@ -32,8 +32,8 @@ function Header() {
     // console.log(allOrders);
   });
   return (
-    <header className="px flex items-center justify-between border-b border-stone-200 bg-yellow-500 px-4 py-3 uppercase sm:px-6">
-      <Link to="/" className="tracking-widest">
+    <header className="flex items-center justify-between border-b border-stone-200 bg-yellow-500 px-3 py-2 uppercase sm:px-6">
+      <Link to="/" className="text-sm tracking-widest">
         Fast React Pizza Company
       </Link>
       <div className="flex flex-row items-center justify-center gap-4">
@@ -41,9 +41,9 @@ function Header() {
         <Username />
         <button
           onClick={onPastOrdersButton}
-          className="inline-block rounded-full bg-green-600 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-stone-50 transition-colors duration-300 hover:bg-green-700 focus:bg-green-700 focus:outline-none focus:ring focus:ring-green-700 focus:ring-offset-2 disabled:cursor-not-allowed"
+          className="inline-block rounded-full bg-green-600 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-stone-50 transition-colors duration-300 hover:bg-green-700 focus:bg-green-700 disabled:cursor-not-allowed"
         >
-          Past Orders
+          Orders
         </button>
         {method === '' ? (
           ''

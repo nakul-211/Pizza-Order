@@ -28,7 +28,6 @@ function CreateOrder() {
   } = useSelector((state) => state.user);
   const isLoadingAddress = addressStatus === 'loading';
   const cart = useSelector(getCart);
-  const loginUid = useSelector((state) => state.user.loginUid);
   const [withPriority, setWithPriority] = useState(false);
   const dispatch = useDispatch();
   const totalCartPrice = useSelector(getTotalCartPrice);
