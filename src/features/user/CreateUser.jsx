@@ -56,7 +56,7 @@ function CreateUser() {
         <button
           disabled={auth?.currentUser?.uid}
           onClick={onGoogleLoginButton}
-          className="mt-3 w-80 border-stone-800 bg-stone-50 px-4 py-2 transition-all hover:bg-stone-100"
+          className="mt-3 w-80 border-2 border-stone-200 bg-stone-50 px-4 py-2 transition-all hover:bg-stone-100"
         >
           {method === 'google.com' ? (
             <span>Logged In</span>
@@ -68,7 +68,7 @@ function CreateUser() {
         <button
           disabled={auth?.currentUser?.uid}
           onClick={onGithubLoginButton}
-          className="mb-4 mt-2 w-80 border-stone-800 bg-stone-50 px-4 py-2 transition-all hover:bg-stone-100"
+          className="mb-4 mt-2 w-80 border-2 border-stone-200 bg-stone-50 px-4 py-2 transition-all hover:bg-stone-100"
         >
           {method === 'github.com' ? (
             <span>Logged In</span>

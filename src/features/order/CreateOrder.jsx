@@ -19,18 +19,28 @@ function CreateOrder() {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === 'submitting';
   const formErrors = useActionData();
+  const { lastInfoName, lastInfoPhone, lastInfoAddress, lastInfoPosition } =
+    JSON.parse(localStorage.getItem('lastInfo')) || {};
   const {
     username,
     status: addressStatus,
     position,
-    address,
     error: errorAddress,
   } = useSelector((state) => state.user);
+  console.log(
+    lastInfoName,
+    lastInfoPhone,
+    lastInfoAddress,
+    lastInfoPosition,
+    'lastInfo',
+  );
+
   const isLoadingAddress = addressStatus === 'loading';
   const cart = useSelector(getCart);
   const [withPriority, setWithPriority] = useState(false);
   const dispatch = useDispatch();
   const totalCartPrice = useSelector(getTotalCartPrice);
+  // const [resetCurrPos, setResetCurrPos] = useState(false);
 
   const totalPrice = withPriority
     ? totalCartPrice * (1 + priorityPrice / 100)
@@ -40,15 +50,16 @@ function CreateOrder() {
     <div>
       <h2 className="mb-8 text-xl font-semibold">Ready to order? Lets go!</h2>
 
-      <Form method="POST" action="/order/new">
+      <Form autoComplete="on" method="POST" action="/order/new">
         <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
           <label className="sm:basis-40">First Name</label>
           <div className="grow">
             <input
               className="input w-full"
               type="text"
+              placeholder="name..."
               name="customer"
-              defaultValue={username}
+              defaultValue={lastInfoName || username}
               required
             />
           </div>
@@ -57,7 +68,15 @@ function CreateOrder() {
         <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
           <label className="sm:basis-40">Phone number</label>
           <div className="grow">
-            <input className="input w-full" type="tel" name="phone" required />
+            <input
+              className="input w-full"
+              type="tel"
+              name="phone"
+              placeholder="enter a 10 digit phone no."
+              defaultValue={lastInfoPhone || ''}
+              required
+              pattern="[0-9]{10}"
+            />
 
             {formErrors?.phone && (
               <p className="mt-2 rounded-md bg-red-100 p-2 text-xs text-red-700">
@@ -67,37 +86,47 @@ function CreateOrder() {
           </div>
         </div>
 
-        <div className="mb-5 flex flex-col items-start gap-2 sm:flex-row">
-          <label className="sm:basis-40">Address</label>
-
-          {!position.latitude && !position.longitude && (
+        <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-start">
+          <label className="py-1.5 sm:basis-40 md:py-3">Address</label>
+          <div className="flex grow items-start gap-2">
             <Button
               type="small"
-              className="bg-yellow-100"
               disabled={isLoadingAddress}
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(fetchAddress());
               }}
             >
-              <div>GET POSITION</div>
-            </Button>
-          )}
+              <div className="flex flex-col sm:flex-row sm:gap-1">
+                {lastInfoPosition ? <div>Reset</div> : <div>GET </div>}
 
-          <div className="w-full grow">
-            <input
-              className="input w-full"
-              type="text"
-              disabled={isLoadingAddress}
-              defaultValue={address}
-              name="address"
-              required
-            />
-            {addressStatus === 'error' && (
-              <p className="mt-2 rounded-md bg-red-100 p-2 text-xs text-red-700">
-                {errorAddress}
-              </p>
-            )}
+                <div> POSITION</div>
+              </div>
+            </Button>
+
+            <div className="w-full grow">
+              <input
+                className="input w-full"
+                type="text"
+                disabled={isLoadingAddress}
+                pattern="^[a-zA-Z0-9\s.,#\-\/]+$"
+                defaultValue={lastInfoAddress || ''}
+                name="address"
+                required
+              />
+              {addressStatus === 'error' ? (
+                <p className="mt-2 rounded-md bg-red-100 p-2 text-xs text-red-700">
+                  {errorAddress}
+                </p>
+              ) : (
+                lastInfoPosition &&
+                !Object.keys(position).length && (
+                  <p className="mt-2 rounded-md bg-stone-100 p-2 text-xs text-stone-700">
+                    Click reset Position to send your current location
+                  </p>
+                )
+              )}
+            </div>
           </div>
         </div>
 
@@ -124,13 +153,18 @@ function CreateOrder() {
             value={
               position.longitude && position.latitude
                 ? `${position.latitude} , ${position.longitude}`
-                : ''
+                : lastInfoPosition
             }
           />
 
-          <Button type="primary">
+          <Button
+            type="primary"
+            disabled={isLoadingAddress || isLoadingAddress}
+          >
             {isSubmitting || isLoadingAddress
-              ? 'Placing Order...'
+              ? isLoadingAddress
+                ? 'fetching Address..'
+                : 'Placing Order...'
               : `Order now from ${formatCurrency(totalPrice)}`}
           </Button>
         </div>
@@ -181,12 +215,20 @@ export async function action({ request }) {
 
   if (Object.keys(errors).length > 0) return errors;
   const newOrder = await createOrder(order);
-  console.log(newOrder);
   loginUid !== 'local' ||
     localStorage.setItem(
       'localOrders',
       JSON.stringify([...orderStoredValue, newOrder.id]),
     );
+  localStorage.setItem(
+    'lastInfo',
+    JSON.stringify({
+      lastInfoName: order.customer,
+      lastInfoPhone: order.phone,
+      lastInfoAddress: order.address,
+      lastInfoPosition: order.position || '',
+    }),
+  );
   store.dispatch(clearCart());
   return redirect(`/order/${newOrder.id}`);
 }

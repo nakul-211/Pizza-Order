@@ -26,34 +26,45 @@ export async function getMenu() {
 }
 
 export async function getOrder(id) {
-  const orderData = await getDocs(orderCollectionRef);
-  const filteredData = orderData.docs
-    .map((doc) => ({
-      ...doc.data(),
-      id: doc.id,
-    }))
-    .find(
-      (item) => item.id === id,
-      // && item.loginUid === (auth?.currentUser?.uid || 'local'),
-    );
-  // console.log(filteredData);
-  return filteredData;
+  try {
+    const orderData = await getDocs(orderCollectionRef);
+    const filteredData = orderData.docs
+      .map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }))
+      .find(
+        (item) => item.id === id,
+        // && item.loginUid === (auth?.currentUser?.uid || 'local'),
+      );
+    return filteredData;
+  } catch (err) {
+    return err;
+  }
 }
 export async function getAllOrders(id, items) {
-  const orderData = await getDocs(orderCollectionRef);
-  const filteredData = orderData.docs
-    .map((doc) => ({
-      ...doc.data(),
-      id: doc.id,
-    }))
-    .filter(
-      (item) => {
-        return items.includes(item.id) || item.loginUid === id;
-      },
+  try {
+    const orderData = await getDocs(orderCollectionRef);
+    const filteredData = orderData.docs
+      .map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }))
+      .filter(
+        (item) => {
+          if (item.loginUid === 'local') {
+            return items.includes(item.id);
+          } else {
+            return item.loginUid === id;
+          }
+        },
 
-      // && item.loginUid === (auth?.currentUser?.uid || 'local'),
-    );
-  return filteredData;
+        // && item.loginUid === (auth?.currentUser?.uid || 'local'),
+      );
+    return filteredData;
+  } catch (err) {
+    return err;
+  }
 }
 export async function createOrder(newOrder) {
   try {

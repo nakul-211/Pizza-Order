@@ -10,7 +10,6 @@ function Header() {
   const method = useSelector((state) => state.user.loginMethod);
   const navigate = useNavigate();
   const onLogoutButton = async function () {
-    // console.log('Logout');
     await signOut(auth);
     dispatch(handleLogout());
     navigate('/');
@@ -29,7 +28,6 @@ function Header() {
         // orders: allOrders || items,
       }),
     );
-    // console.log(allOrders);
   });
   return (
     <header className="flex items-center justify-between border-b border-stone-200 bg-yellow-500 px-3 py-2 uppercase sm:px-6">

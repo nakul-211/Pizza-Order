@@ -98,7 +98,6 @@ function Order() {
 }
 
 export async function loader({ params }) {
-  // console.log(auth);
   const order = await getOrder(params.orderId);
   return order;
 }

@@ -78,9 +78,9 @@ function PastOrderItem({ order }) {
             )}
             <button
               onClick={() => navigate(`/order/${id}`)}
-              className="text-base"
+              className="rounded-full bg-yellow-400 px-2 py-1 text-sm text-stone-800 transition-colors hover:bg-yellow-300"
             >
-              ℹ️
+              i
             </button>
           </div>
         </div>

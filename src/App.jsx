@@ -21,6 +21,7 @@ const router = createBrowserRouter([
         path: '/pastorders',
         element: <PastOrders />,
         loader: pastOrdersLoader,
+        errorElement: <Error />,
       },
       {
         path: '/menu',
@@ -33,6 +34,7 @@ const router = createBrowserRouter([
         path: '/order/new',
         element: <CreateOrder />,
         action: createOrderAction,
+        errorElement: <Error />,
       },
       {
         path: '/order/:orderId',
