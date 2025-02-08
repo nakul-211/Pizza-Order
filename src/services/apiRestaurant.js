@@ -5,7 +5,7 @@ import {
   getDocs,
   updateDoc,
 } from 'firebase/firestore';
-import { db } from './firebaseConfig';
+import { auth, db } from './firebaseConfig';
 import { priorityPrice } from '../features/order/CreateOrder';
 
 const menuCollectionRef = collection(db, 'Pizza-Menu');
@@ -16,6 +16,7 @@ export async function getMenu() {
     const filteredMenuData = menuData.docs.map((doc) => ({
       ...doc.data(),
       id: doc.id,
+      // loginUid: auth?.currentUser?.uid || 'local',
     }));
 
     return filteredMenuData;
@@ -25,16 +26,46 @@ export async function getMenu() {
 }
 
 export async function getOrder(id) {
-  const orderData = await getDocs(orderCollectionRef);
-  const filteredData = orderData.docs
-    .map((doc) => ({
-      ...doc.data(),
-      id: doc.id,
-    }))
-    .find((item) => item.id === id);
-  return filteredData;
+  try {
+    const orderData = await getDocs(orderCollectionRef);
+    const filteredData = orderData.docs
+      .map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }))
+      .find(
+        (item) => item.id === id,
+        // && item.loginUid === (auth?.currentUser?.uid || 'local'),
+      );
+    return filteredData;
+  } catch (err) {
+    return err;
+  }
 }
+export async function getAllOrders(id, items) {
+  try {
+    const orderData = await getDocs(orderCollectionRef);
+    const filteredData = orderData.docs
+      .map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }))
+      .filter(
+        (item) => {
+          if (item.loginUid === 'local') {
+            return items.includes(item.id);
+          } else {
+            return item.loginUid === id;
+          }
+        },
 
+        // && item.loginUid === (auth?.currentUser?.uid || 'local'),
+      );
+    return filteredData;
+  } catch (err) {
+    return err;
+  }
+}
 export async function createOrder(newOrder) {
   try {
     const data = await addDoc(orderCollectionRef, newOrder);
@@ -44,15 +75,17 @@ export async function createOrder(newOrder) {
   }
 }
 
-export async function updateOrder(id, updateObj) {
+export async function updateOrder(id) {
   try {
+    const loginUid = auth?.currentUser?.uid || 'local';
     const orderData = await getDocs(orderCollectionRef);
     const filteredData = orderData.docs
       .map((doc) => ({
         ...doc.data(),
         id: doc.id,
+        // loginUid: auth?.currentUser?.uid || 'local',
       }))
-      .find((item) => item.id === id);
+      .find((item) => item.id === id && item.loginUid === loginUid);
     const orderDoc = doc(db, 'Pizza-Order', id);
 
     await updateDoc(orderDoc, {

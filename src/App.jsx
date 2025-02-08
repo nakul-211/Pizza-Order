@@ -9,6 +9,7 @@ import CreateOrder, {
   action as createOrderAction,
 } from './features/order/CreateOrder';
 import Error from './ui/Error';
+import PastOrders, { pastOrdersLoader } from './features/pastOrders/PastOrders';
 
 const router = createBrowserRouter([
   {
@@ -16,6 +17,12 @@ const router = createBrowserRouter([
     errorElement: <Error />,
     children: [
       { path: '/', element: <Home /> },
+      {
+        path: '/pastorders',
+        element: <PastOrders />,
+        loader: pastOrdersLoader,
+        errorElement: <Error />,
+      },
       {
         path: '/menu',
         element: <Menu />,
@@ -27,6 +34,7 @@ const router = createBrowserRouter([
         path: '/order/new',
         element: <CreateOrder />,
         action: createOrderAction,
+        errorElement: <Error />,
       },
       {
         path: '/order/:orderId',

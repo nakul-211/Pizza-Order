@@ -1,9 +1,9 @@
 import { formatCurrency } from '../../utils/helpers';
-import Button from '../../ui/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { addItem } from '../cart/cartSlice';
 import DeleteItem from '../cart/DeleteItem';
 import UpdateItemQuantity from '../cart/UpdateItemQuantity';
+import Button from '../../ui/button';
 function MenuItem({ pizza }) {
   const { id, name, unitPrice, ingredients, soldOut, imageUrl } = pizza;
   const dispatch = useDispatch();
@@ -25,11 +25,11 @@ function MenuItem({ pizza }) {
       <img
         src={imageUrl}
         alt={name}
-        className={`h-24 ${soldOut ? 'opacity-70 grayscale' : ''}`}
+        className={`h-16 sm:h-20 md:h-24 ${soldOut ? 'opacity-70 grayscale' : ''}`}
       />
       <div className="flex w-full flex-col pt-0.5">
-        <p className="font-medium">{name}</p>
-        <p className="text-sm capitalize italic text-stone-500">
+        <p className="text-sm font-medium md:text-base">{name}</p>
+        <p className="text-xs capitalize italic text-stone-500 sm:text-sm">
           {ingredients.join(', ')}
         </p>
         <div className="mt-auto flex items-center justify-between">
@@ -38,7 +38,7 @@ function MenuItem({ pizza }) {
               {formatCurrency(unitPrice)}
             </p>
           ) : (
-            <p>Sold out</p>
+            <p className="text-sm sm:text-base">Sold out</p>
           )}
 
           {!soldOut && itemQuantity && (

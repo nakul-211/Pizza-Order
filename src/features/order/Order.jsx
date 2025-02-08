@@ -29,6 +29,7 @@ function Order() {
     orderPrice,
     estimatedDelivery,
     cart,
+    delivered,
   } = order;
   const deliveryIn = calcMinutesLeft(estimatedDelivery);
 
@@ -44,20 +45,26 @@ function Order() {
             </span>
           )}
           <span className="rounded-full bg-green-500 px-3 py-1 text-sm font-semibold uppercase tracking-wide text-green-50">
-            {status} order
+            {status}order
           </span>
         </div>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2 bg-stone-200 px-6 py-5">
-        <p className="font-medium">
-          {deliveryIn >= 0
-            ? `Only ${calcMinutesLeft(estimatedDelivery)} minutes left 😃`
-            : 'Order should have arrived'}
-        </p>
-        <p className="text-xs text-stone-500">
-          (Estimated delivery: {formatDate(estimatedDelivery)})
-        </p>
+        {delivered ? (
+          <p className="font-medium">delivered</p>
+        ) : (
+          <>
+            <p className="font-medium">
+              {deliveryIn >= 0
+                ? `Only ${calcMinutesLeft(estimatedDelivery)} minutes left 😃`
+                : 'Order should have arrived'}
+            </p>
+            <p className="text-xs text-stone-500">
+              (Estimated delivery: {formatDate(estimatedDelivery)})
+            </p>
+          </>
+        )}
       </div>
       <ul className="divide-y divide-stone-200 border-b border-t">
         {cart.map((item) => (
@@ -76,7 +83,7 @@ function Order() {
         <p className="text-sm font-medium text-stone-600">
           Price pizza: {formatCurrency(orderPrice)}
         </p>
-        {priority && (
+        {priority && !delivered && (
           <p className="text-sm font-medium text-stone-600">
             Price priority: {formatCurrency(priorityPrice)}
           </p>
